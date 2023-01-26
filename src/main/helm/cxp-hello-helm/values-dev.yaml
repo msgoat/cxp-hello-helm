@@ -1,0 +1,7 @@
+replicaCount: 1
+
+container:
+  main:
+    env:
+      MY_STAGE: DEV
+

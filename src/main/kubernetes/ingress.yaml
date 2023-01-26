@@ -1,0 +1,25 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: cxp-hello
+  labels:
+    app.kubernetes.io/name: cxp-hello
+    app.kubernetes.io/instance: cxp-hello
+    app.kubernetes.io/version: "0.8.0.LOCAL.1234567"
+    app.kubernetes.io/managed-by: kubectl
+  annotations:
+    # does the following rewrite: /cxp-team-miket92/cxp-hello-helm/api/v1/hello -> /api/v1/hello
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: "cxp.k8s.azure.msgoat.eu"
+      http:
+        paths:
+          - path: /cxp-team-miket92/cxp-hello-helm(/|$)(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: cxp-hello-helm
+                port:
+                  name: http

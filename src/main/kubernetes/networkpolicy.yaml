@@ -1,0 +1,20 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: cxp-hello
+  labels:
+    app.kubernetes.io/name: cxp-hello
+    app.kubernetes.io/instance: cxp-hello
+    app.kubernetes.io/version: "0.8.0.LOCAL.1234567"
+    app.kubernetes.io/managed-by: kubectl
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: cxp-hello
+      app.kubernetes.io/instance: cxp-hello
+  policyTypes:
+    - Ingress
+  ingress:
+    - ports:
+        - protocol: TCP
+          port: 8080

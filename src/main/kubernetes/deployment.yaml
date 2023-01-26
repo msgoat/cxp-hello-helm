@@ -1,0 +1,69 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cxp-hello
+  labels:
+    app.kubernetes.io/name: cxp-hello
+    app.kubernetes.io/instance: cxp-hello
+    app.kubernetes.io/version: "0.8.0.LOCAL.1234567"
+    app.kubernetes.io/managed-by: kubectl
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: cxp-hello
+      app.kubernetes.io/instance: cxp-hello
+# Pod template starts here!
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: cxp-hello
+        app.kubernetes.io/instance: cxp-hello
+    spec:
+      serviceAccountName: cxp-hello-helm
+      securityContext:
+        {}
+      containers:
+        - name: cxp-hello-helm
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            privileged: false
+            readOnlyRootFilesystem: false
+            runAsNonRoot: true
+            runAsGroup: 1000
+            runAsUser: 1000
+          image: "docker.cloudtrain.aws.msgoat.eu/cloudtrain/cxp-hello-helm:0.8.0.LOCAL.1234567"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: http
+          resources:
+            limits:
+              memory: 2Gi
+            requests:
+              cpu: 250m
+              memory: 2Gi
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: cloud
+            - name: CNAP_CLOUD
+              value: kubernetes
+            - name: OPENTRACING_JAEGER_ENABLED
+              value: "false"
+            - name: OPENTRACING_JAEGER_UDP_SENDER_HOST
+              value: "jaeger-agent.tracing"
+            - name: OPENTRACING_JAEGER_UDP_SENDER_PORT
+              value: "6831"
+            - name: OPENTRACING_JAEGER_LOGSPANS
+              value: "true"

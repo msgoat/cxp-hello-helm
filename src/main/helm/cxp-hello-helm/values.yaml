@@ -1,0 +1,101 @@
+# Default values for cxp-hello-helm.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 2
+
+image:
+  repository: docker.cloudtrain.aws.msgoat.eu/cxp/cxp-hello-helm
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: ""
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext:
+  fsGroup: 2000
+
+securityContext:
+  capabilities:
+    drop:
+    - ALL
+  readOnlyRootFilesystem: false
+  runAsNonRoot: true
+  runAsUser: 1000
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: true
+  className: "nginx"
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+  hosts:
+    - host: "cxp.k8s.azure.msgoat.eu"
+      paths:
+        - path: /cxp-team-miket92/cxp-hello-helm(/|$)(.*)
+          pathType: Prefix
+
+resources:
+  limits:
+    memory: 2Gi
+  requests:
+    cpu: 250m
+    memory: 2Gi
+
+probes:
+  readiness:
+    path: /actuator/health/readiness
+  liveness:
+    path: /actuator/health/liveness
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+container:
+  main:
+    env:
+      SPRING_PROFILES_ACTIVE: cloud
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+# In managed Kubernetes clusters you should always apply pod disruption budgets
+# to your applications. When applying them, you have to keep in mind that you have to run your
+# application with more than one replica at any time!
+podDisruptionBudget:
+  enabled: false
+  minUnavailable: 1
+  # minAvailable: 1
+
+# metrics configuration
+metrics:
+  # controls if pods are annotated for scraping
+  enabled: true
+  # path to metrics endpoint
+  path: /actuator/prometheus
+  serviceMonitor:
+    # installs a prometheus-operator service monitor CRD when true
+    enabled: true
