@@ -9,8 +9,8 @@
     <description>Simplest possible cloud native java backend based on Spring Boot</description>
     <properties>
         <!-- new Maven version management -->
-        <revision>1.0.0</revision>
-        <sha1>.1234567</sha1>
+        <revision>1.1.0</revision>
+        <sha1>.2345678</sha1>
         <changelist>.LOCAL</changelist>
         <!-- general properties -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -118,6 +118,11 @@
             <groupId>io.micrometer</groupId>
             <artifactId>micrometer-registry-prometheus</artifactId>
             <version>${micrometer.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.opentracing.contrib</groupId>
+            <artifactId>opentracing-spring-jaeger-web-starter</artifactId>
+            <version>3.3.1</version>
         </dependency>
         <!-- =========================== -->
         <!-- test time dependencies      -->
